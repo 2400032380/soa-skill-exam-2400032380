@@ -1,0 +1,65 @@
+name: microservices-deployment
+
+services:
+  postgresdb:
+    image: postgres:16-alpine
+    container_name: postgresdb
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: exam123
+      POSTGRES_DB: soa-skill-exam-2400032380
+
+    ports:
+      - "5434:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d soa-skill-exam-2400032380 -p 5432"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+    networks:
+      - microservices-network
+
+  exam-service:
+    image: viswasindhusri/docker-skill-exam-2400032380:latest
+
+    build:
+      context: ./SOAProject
+      dockerfile: Dockerfile
+
+    container_name: exam-service
+    restart: unless-stopped
+
+    environment:
+      SPRING_APPLICATION_NAME: SOAProject
+      SERVER_PORT: 2005
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresdb:5432/soa-skill-exam-2400032380
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: exam123
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+
+    ports:
+      - "9001:2005"
+
+    depends_on:
+      postgresdb:
+        condition: service_healthy
+
+    networks:
+      - microservices-network
+
+volumes:
+  postgres_data:
+
+networks:
+  microservices-network:
+    driver: bridge

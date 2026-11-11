@@ -1,7 +1,0 @@
-com\klef\soa\as\controller\ProjectController.class
-com\klef\soa\as\entity\Project.class
-com\klef\soa\as\SoaProjectApplication.class
-com\klef\soa\as\configuration\SwaggerConfig.class
-com\klef\soa\as\repository\ProjectRepository.class
-com\klef\soa\as\service\ProjectServiceImpl.class
-com\klef\soa\as\service\ProjectService.class
